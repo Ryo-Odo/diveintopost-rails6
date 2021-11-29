@@ -17,7 +17,7 @@ class AssignsController < ApplicationController
   def destroy
     assign = Assign.find(params[:id])
     destroy_message = assign_destroy(assign, assign.user)
-
+    binding.irb
     redirect_to team_url(params[:team_id]), notice: destroy_message
   end
 
@@ -27,7 +27,9 @@ class AssignsController < ApplicationController
   end
 
   def assign_destroy(assign, assigned_user)
-    if assigned_user == assign.team.owner
+    if current_user != assign.team.owner || current_user != assigned_user
+      "メンバーの削除は、リーダーか本人しかできません"
+    elsif assigned_user == assign.team.owner
       I18n.t('views.messages.cannot_delete_the_leader')
     elsif Assign.where(user_id: assigned_user.id).count == 1
       I18n.t('views.messages.cannot_delete_only_a_member')
