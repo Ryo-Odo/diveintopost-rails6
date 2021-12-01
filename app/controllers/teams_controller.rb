@@ -49,6 +49,17 @@ class TeamsController < ApplicationController
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
   end
 
+  def owner_change
+    binding.irb
+    @team = Team.find(params[:id])
+    if @team.owner_id == current_user.id
+      @team.update_attribute(:owner_id, params[:user_id])
+      redirect_to @team, notice: 'リーダー権限を譲渡しました'
+    else
+      redirect_to @team, notice: '権限が有りません'
+    end
+  end
+
   private
 
   def set_team
